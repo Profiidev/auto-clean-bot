@@ -1,0 +1,16 @@
+[package]
+name = "auto-clean-bot"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.98"
+dotenv = "0.15.0"
+poise = "0.6.1"
+serenity = "0.12.4"
+tokio = { version = "1.45.1", features = ["full"] }
+chrono = "0.4.41"
+
+[[bin]]
+name = "auto-clean-bot"
+path = "src/main.rs"
