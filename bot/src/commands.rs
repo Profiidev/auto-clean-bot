@@ -22,28 +22,30 @@ pub async fn auto_clean(
   if !conn.clean_channel().channel_exists(channel.id()).await {
     conn
       .clean_channel()
-      .insert_channel(channel.id(), delay * 60)
+      .insert_channel(channel.id(), delay)
       .await?;
 
     ctx
       .say(format!(
-        "Now cleaning messages in channel: {}, after a delay of {} seconds.",
+        "Now cleaning messages in channel: {}, after a delay of {} minute.",
         channel, delay
       ))
       .await?;
   } else {
     conn
       .clean_channel()
-      .update_delay(channel.id(), delay * 60)
+      .update_delay(channel.id(), delay)
       .await?;
 
     ctx
       .say(format!(
-        "Updated delay for channel: {}, to {} seconds.",
+        "Updated delay for channel: {}, to {} minute.",
         channel, delay
       ))
       .await?;
   }
+
+  ctx.data().trigger_delete_notify.notify_waiters();
 
   Ok(())
 }
@@ -84,7 +86,7 @@ pub async fn purge(
     .await?;
 
   let messages = channel
-    .messages(ctx, GetMessages::new().limit(count))
+    .messages(ctx, GetMessages::new().limit(count + 1))
     .await?;
 
   let mut ids: Vec<MessageId> = Vec::new();
