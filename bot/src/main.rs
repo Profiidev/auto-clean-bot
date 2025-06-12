@@ -1,11 +1,14 @@
 use anyhow::{Error, Result};
 use chrono::Days;
+use migration::MigratorTrait;
 use poise::{
   Framework, FrameworkOptions, PrefixFrameworkOptions, command, samples::register_globally,
 };
+use sea_orm::Database;
 use serenity::all::{
   Channel, ClientBuilder, GatewayIntents, GetMessages, GuildChannel, MessageId, Timestamp,
 };
+use tracing_subscriber::{EnvFilter, fmt::layer, layer::SubscriberExt, util::SubscriberInitExt};
 
 struct Data;
 type Context<'a> = poise::Context<'a, Data, Error>;
@@ -65,6 +68,22 @@ async fn purge(
 async fn main() {
   #[cfg(debug_assertions)]
   dotenv::dotenv().ok();
+  tracing_subscriber::registry()
+    .with(layer().compact())
+    .with(EnvFilter::from_default_env())
+    .init();
+  tracing::info!("Starting bot...");
+
+  let db_url = std::env::var("DB_URL").expect("missing DB_URL");
+  let conn = Database::connect(&db_url)
+    .await
+    .expect("Failed to connect to database");
+  tracing::info!("Connected to database at {}", db_url);
+
+  migration::Migrator::up(&conn, None)
+    .await
+    .expect("Failed to run migrations");
+  tracing::info!("Database migrations completed");
 
   let token = std::env::var("DISCORD_TOKEN").expect("missing DISCORD_TOKEN");
   let intents = GatewayIntents::non_privileged() | GatewayIntents::MESSAGE_CONTENT;
@@ -91,5 +110,6 @@ async fn main() {
     .await
     .expect("Failed to create client");
 
+  tracing::info!("Client created, starting...");
   client.start().await.expect("Failed to start client");
 }
