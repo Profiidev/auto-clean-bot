@@ -77,9 +77,7 @@ pub async fn purge(
   #[description = "The number of messages to purge"] count: u8,
 ) -> Result<()> {
   ctx
-    .say(format!(
-      "Purging {count} messages in channel: {channel}"
-    ))
+    .say(format!("Purging {count} messages in channel: {channel}"))
     .await?;
 
   let messages = channel
