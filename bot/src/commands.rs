@@ -27,8 +27,7 @@ pub async fn auto_clean(
 
     ctx
       .say(format!(
-        "Now cleaning messages in channel: {}, after a delay of {} minute.",
-        channel, delay
+        "Now cleaning messages in channel: {channel}, after a delay of {delay} minute."
       ))
       .await?;
   } else {
@@ -39,8 +38,7 @@ pub async fn auto_clean(
 
     ctx
       .say(format!(
-        "Updated delay for channel: {}, to {} minute.",
-        channel, delay
+        "Updated delay for channel: {channel}, to {delay} minute."
       ))
       .await?;
   }
@@ -61,11 +59,11 @@ pub async fn stop_auto_clean(
     conn.clean_channel().delete_channel(channel.id()).await?;
 
     ctx
-      .say(format!("Stopped cleaning messages in channel: {}", channel))
+      .say(format!("Stopped cleaning messages in channel: {channel}"))
       .await?;
   } else {
     ctx
-      .say(format!("No auto-clean setup for channel: {}", channel))
+      .say(format!("No auto-clean setup for channel: {channel}"))
       .await?;
   }
 
@@ -79,10 +77,7 @@ pub async fn purge(
   #[description = "The number of messages to purge"] count: u8,
 ) -> Result<()> {
   ctx
-    .say(format!(
-      "Purging {} messages in channel: {}",
-      count, channel
-    ))
+    .say(format!("Purging {count} messages in channel: {channel}"))
     .await?;
 
   let messages = channel
