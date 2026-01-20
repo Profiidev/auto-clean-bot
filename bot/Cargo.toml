@@ -9,7 +9,7 @@ dotenv = "0.15.0"
 poise = "0.6.1"
 serenity = "0.12.5"
 tokio = { version = "1.49.0", features = ["full"] }
-chrono = "0.4.42"
+chrono = "0.4.43"
 sea-orm = { version = "1.1.19", features = [
   "sqlx-postgres",
   "runtime-tokio-rustls",
