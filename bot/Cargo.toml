@@ -18,7 +18,7 @@ entity = { path = "entity" }
 migration = { path = "migration" }
 tracing-subscriber = "0.3.22"
 tracing = "0.1.44"
-uuid = { version = "1.20.0", features = ["v4"] }
+uuid = { version = "1.21.0", features = ["v4"] }
 
 [[bin]]
 name = "auto-clean-bot"
