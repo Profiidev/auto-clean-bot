@@ -4,12 +4,12 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-anyhow = "1.0.101"
+anyhow = "1.0.102"
 dotenv = "0.15.0"
 poise = "0.6.1"
 serenity = "0.12.5"
 tokio = { version = "1.49.0", features = ["full"] }
-chrono = "0.4.43"
+chrono = "0.4.44"
 sea-orm = { version = "1.1.19", features = [
   "sqlx-postgres",
   "runtime-tokio-rustls",
