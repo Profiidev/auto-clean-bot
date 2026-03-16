@@ -16,7 +16,7 @@ sea-orm = { version = "1.1.19", features = [
 ] }
 entity = { path = "entity" }
 migration = { path = "migration" }
-tracing-subscriber = "0.3.22"
+tracing-subscriber = "0.3.23"
 tracing = "0.1.44"
 uuid = { version = "1.22.0", features = ["v4"] }
 
