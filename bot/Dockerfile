@@ -30,7 +30,7 @@ RUN mv ./target/$TARGET/release/auto-clean-bot ./app
 
 FROM alpine@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11
 
-RUN groupadd -r bot && useradd -r -g bot bot
+RUN addgroup -S bot && adduser -S -G bot bot
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
