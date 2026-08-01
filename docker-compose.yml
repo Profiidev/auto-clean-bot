@@ -1,6 +1,6 @@
 services:
   bot:
-    image: ghcr.io/profiidev/images/rust-musl-watch:main@sha256:e65645871b5e1c970f7417189d9b0747dc8d0ad7bf7844ce8f394e2be64e1598
+    image: ghcr.io/profiidev/images/rust-musl-watch:main@sha256:a82703d3509314ca08c665c921114c9b0cbee2c464b2a038e39c47e9eef05f9a
     volumes:
       - ./bot:/app
     tty: true
@@ -11,7 +11,7 @@ services:
         condition: service_healthy
 
   postgres:
-    image: postgres:latest@sha256:78481659c47e862334611ccdaf7c369c986b3046da9857112f3b309114a65fb4
+    image: postgres:latest@sha256:3a82e1f56c8f0f5616a11103ac3d47e632c3938698946a7ad26da0df1334744a
     restart: unless-stopped
     volumes:
       - ./postgres:/var/lib/postgresql/data
