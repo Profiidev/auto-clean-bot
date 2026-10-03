@@ -6,7 +6,7 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0.102"
 dotenv = "0.15.0"
-poise = "0.6.2"
+poise = "0.7.0"
 serenity = "0.12.5"
 tokio = { version = "1.51.1", features = ["full"] }
 chrono = "0.4.44"
