@@ -55,9 +55,7 @@ async fn main() {
         prefix: Some("-".into()),
         ..Default::default()
       },
-      event_handler: |ctx, event, framework, data| {
-        Box::pin(event_handler(ctx, event, framework, data))
-      },
+      event_handler: |framework, event| Box::pin(event_handler(framework, event)),
       ..Default::default()
     })
     .setup(|ctx, _ready, framework| {
