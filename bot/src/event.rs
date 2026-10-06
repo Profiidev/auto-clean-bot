@@ -2,18 +2,18 @@ use std::{sync::atomic::Ordering, time::Duration};
 
 use anyhow::Error;
 use poise::FrameworkContext;
-use serenity::all::{Context, FullEvent};
+use serenity::all::FullEvent;
 use tokio::{select, spawn, time::sleep};
 use tracing::info;
 
 use crate::{Data, db::DBTrait};
 
 pub async fn event_handler(
-  ctx: &Context,
+  framework: FrameworkContext<'_, Data, Error>,
   event: &FullEvent,
-  _framework: FrameworkContext<'_, Data, Error>,
-  data: &Data,
 ) -> Result<(), Error> {
+  let ctx = framework.serenity_context;
+  let data = framework.user_data;
   match event {
     FullEvent::Ready { data_about_bot, .. } => {
       info!("Logged in as {}", data_about_bot.user.name);
