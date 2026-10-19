@@ -1,0 +1,121 @@
+name: Tests
+on:
+  pull_request:
+
+jobs:
+  unit:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+
+      - name: Cache cargo and rust files
+        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+        with:
+          cache-on-failure: true
+          shared-key: "test_cache"
+
+      - uses: taiki-e/install-action@8cca0918f8471c33515202b73f56ab27f2bed283 # v2
+        with:
+          tool: cargo-nextest
+
+      - name: Run unit tests
+        run: cargo nextest run --workspace --lib --bins --profile unit --nff
+
+      - name: Upload Test Result File
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        if: always()
+        with:
+          name: test-results-unit
+          path: ${{ github.workspace }}/target/nextest/unit/junit-unit.xml
+          retention-days: 5
+
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+
+      - name: Cache cargo and rust files
+        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+        with:
+          cache-on-failure: true
+          shared-key: "test_cache"
+
+      - uses: taiki-e/install-action@8cca0918f8471c33515202b73f56ab27f2bed283 # v2
+        with:
+          tool: cargo-nextest
+
+      # postgres tests use testcontainers and need the runner's Docker daemon
+      - name: Run integration tests
+        run: cargo nextest run --workspace --test '*' --profile integration --nff
+
+      - name: Upload Test Result File
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        if: always()
+        with:
+          name: test-results-integration
+          path: ${{ github.workspace }}/target/nextest/integration/junit-integration.xml
+          retention-days: 5
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+        with:
+          components: llvm-tools-preview
+
+      - name: Cache cargo and rust files
+        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+        with:
+          cache-on-failure: true
+          shared-key: "coverage_cache"
+
+      - uses: taiki-e/install-action@8cca0918f8471c33515202b73f56ab27f2bed283 # v2
+        with:
+          tool: cargo-nextest,cargo-llvm-cov
+
+      - name: Collect coverage
+        run: |
+          cargo llvm-cov nextest --workspace --nff --lcov --output-path lcov.info
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cargo llvm-cov report --summary-only >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Coverage
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: coverage-lcov
+          path: ${{ github.workspace }}/lcov.info
+          retention-days: 5
+
+  comment_results:
+    name: Comment Results to PR
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - unit
+      - integration
+    steps:
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        id: app-token
+        with:
+          client-id: ${{ secrets.COMMIT_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.COMMIT_BOT_PRIVATE_KEY }}
+      - name: Download Test Results
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: test-results-*
+          merge-multiple: true
+          path: test-results
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2
+        if: always()
+        with:
+          github_token: ${{ steps.app-token.outputs.token }}
+          files: |
+            test-results/**/*.xml

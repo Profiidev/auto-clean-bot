@@ -1,28 +1,13 @@
-use std::sync::{Arc, atomic::AtomicBool};
-
-use anyhow::Error;
-use migration::MigratorTrait;
-use poise::{Framework, FrameworkOptions, PrefixFrameworkOptions, samples::register_globally};
-use sea_orm::{Database, DatabaseConnection};
-use serenity::all::{ClientBuilder, GatewayIntents};
-use tokio::sync::Notify;
-use tracing_subscriber::{EnvFilter, fmt::layer, layer::SubscriberExt, util::SubscriberInitExt};
-
-use crate::{
+use auto_clean_bot::{
+  Data,
   commands::{auto_clean, purge, stop_auto_clean},
   event::event_handler,
 };
-
-mod commands;
-mod db;
-mod event;
-
-struct Data {
-  conn: DatabaseConnection,
-  thread_started: AtomicBool,
-  trigger_delete_notify: Arc<Notify>,
-}
-type Context<'a> = poise::Context<'a, Data, Error>;
+use migration::MigratorTrait;
+use poise::{Framework, FrameworkOptions, PrefixFrameworkOptions, samples::register_globally};
+use sea_orm::Database;
+use serenity::all::{ClientBuilder, GatewayIntents};
+use tracing_subscriber::{EnvFilter, fmt::layer, layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
 async fn main() {
@@ -61,11 +46,7 @@ async fn main() {
     .setup(|ctx, _ready, framework| {
       Box::pin(async move {
         register_globally(ctx, &framework.options().commands).await?;
-        Ok(Data {
-          conn,
-          thread_started: AtomicBool::new(false),
-          trigger_delete_notify: Arc::new(Notify::new()),
-        })
+        Ok(Data::new(conn))
       })
     })
     .build();
