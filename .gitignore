@@ -3,3 +3,4 @@
 postgres/
 bot/target
 bot/Cargo.lock
+lcov.info
