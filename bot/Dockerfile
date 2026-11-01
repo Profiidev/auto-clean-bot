@@ -1,6 +1,6 @@
 ARG TARGET=x86_64-unknown-linux-musl
 
-FROM ghcr.io/profiidev/images/rust-musl-builder:main@sha256:b89754fac7aa225332f18392001c6dee411da27b40f1a17d62591e9769500373 AS planner
+FROM ghcr.io/profiidev/images/rust-musl-builder:main@sha256:bba31cbe253d8bd0dffa95b765789ce41d3cbc00b18b2a4f44acf3fcda8d060d AS planner
 
 COPY bot/entity/Cargo.toml ./entity/Cargo.toml
 COPY bot/migration/Cargo.toml ./migration/Cargo.toml
@@ -11,7 +11,7 @@ RUN echo "[workspace]" >> Cargo.toml && \
 
 RUN cargo chef prepare --recipe-path recipe.json --bin auto-clean-bot
 
-FROM ghcr.io/profiidev/images/rust-musl-builder:main@sha256:b89754fac7aa225332f18392001c6dee411da27b40f1a17d62591e9769500373 AS builder
+FROM ghcr.io/profiidev/images/rust-musl-builder:main@sha256:bba31cbe253d8bd0dffa95b765789ce41d3cbc00b18b2a4f44acf3fcda8d060d AS builder
 
 ARG TARGET
 ENV TARGET=$TARGET
