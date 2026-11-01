@@ -28,7 +28,7 @@ jobs:
           github-token: ${{ github.token }}
 
       - name: Publish lint results
-        uses: profiidev/rust-lint-action@7185d73733d1ab71a15c74934a2349622ad60740 # v4
+        uses: profiidev/rust-lint-action@16801b02ca2bc0441e458d7f713d8a0e8d417927 # v4
         with:
           publish_results: lint-results.json
           github_token: ${{ steps.app-token.outputs.token }}
