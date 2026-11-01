@@ -1,6 +1,6 @@
 ARG TARGET=x86_64-unknown-linux-musl
 
-FROM ghcr.io/profiidev/images/rust-musl-builder:main@sha256:8f21308d89e0ba0ce22d6b4b4038ba672cdcc4a947d388efad554eb23d6e5b7e AS planner
+FROM ghcr.io/profiidev/images/rust-musl-builder:main@sha256:b89754fac7aa225332f18392001c6dee411da27b40f1a17d62591e9769500373 AS planner
 
 COPY bot/entity/Cargo.toml ./entity/Cargo.toml
 COPY bot/migration/Cargo.toml ./migration/Cargo.toml
@@ -11,7 +11,7 @@ RUN echo "[workspace]" >> Cargo.toml && \
 
 RUN cargo chef prepare --recipe-path recipe.json --bin auto-clean-bot
 
-FROM ghcr.io/profiidev/images/rust-musl-builder:main@sha256:8f21308d89e0ba0ce22d6b4b4038ba672cdcc4a947d388efad554eb23d6e5b7e AS builder
+FROM ghcr.io/profiidev/images/rust-musl-builder:main@sha256:b89754fac7aa225332f18392001c6dee411da27b40f1a17d62591e9769500373 AS builder
 
 ARG TARGET
 ENV TARGET=$TARGET
@@ -28,7 +28,7 @@ COPY bot/Cargo.toml Cargo.lock ./
 RUN cargo build --release --target $TARGET --bin auto-clean-bot
 RUN mv ./target/$TARGET/release/auto-clean-bot ./app
 
-FROM alpine@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+FROM alpine@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c0371ea2c9a
 
 RUN addgroup -S bot && adduser -S -G bot bot
 
